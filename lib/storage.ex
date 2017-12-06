@@ -1,7 +1,7 @@
 defmodule Storage do
   use Agent
 
-  defstruct [visited: MapSet.new, to_visit: [], pages: %{}]
+  defstruct [visited: MapSet.new, to_visit: [], pages: []]
   @moduledoc """
 
   """
@@ -16,12 +16,11 @@ defmodule Storage do
   @doc """
       Submits the result of a crawl for a single page.
       Page might look like:
-        %{:a => ["abc.com", "bbc.com"], :img => []}
+        {:my_test_page, %{:a => ["bbc.com"], :link => []}}
   """
   def submit_page(agent, {page_name, page_data}) do
     fun = fn data ->
-      new_map = Map.put(data.pages, page_name, page_data)
-      %{data | pages: new_map}
+      %{data | pages: [{page_name, page_data}] ++ data.pages}
     end
     Agent.update(agent, fun, 5000)
   end

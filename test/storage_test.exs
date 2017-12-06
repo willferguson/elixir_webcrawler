@@ -7,9 +7,13 @@ defmodule StorageTest do
     %{storage: storage}
   end
 
-  #TODO Pages need to be an array!
-  test "tests adding pages", %{storage: storage} do
-    Storage.submit_page(storage, {:my_test_page, %{:a => [], :link => []}})
-    assert Storage.get_pages(storage) == %{my_test_page: %{a: [], link: []}}
+  test "tests adding and getting pages", %{storage: storage} do
+    Storage.submit_page(storage, {:my_test_page, %{:a => ["bbc.com"], :link => []}})
+    assert Storage.get_pages(storage) == [my_test_page: %{a: ["bbc.com"], link: []}]
+    Storage.submit_page(storage, {:another_test_page, %{:a => ["abc.com", "cbc.com"], :link => ["abc.com/css"]}})
+    assert Storage.get_pages(storage) == [
+      another_test_page: %{:a => ["abc.com", "cbc.com"], :link => ["abc.com/css"]},
+      my_test_page: %{a: ["bbc.com"], link: []}
+    ]
   end
 end
