@@ -18,9 +18,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/webcrawler](https://hexdocs.pm/webcrawler).
-
-Test Lines
-
-current = %Storage{results: %{:a => ["err.com", "grr.com"], :link => ["aaa.com"]}}
-
-map = %{:a => ["abc.com", "bbc.com"], :img => ["abc.com", "bbc.com"]}
