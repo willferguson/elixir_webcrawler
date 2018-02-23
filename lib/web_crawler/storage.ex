@@ -1,5 +1,5 @@
 defmodule WebCrawler.Storage do
-  use Agent
+  use Agent, restart: :temporary
 
   @agent_update_timeout 5000
   defstruct [visited: MapSet.new, to_visit: [], pages: []]
@@ -10,8 +10,8 @@ defmodule WebCrawler.Storage do
   @doc """
     Starts our agent
   """
-  def start_link(state) do
-    Agent.start_link(fn -> state end, name: __MODULE__)
+  def start_link(_opts) do
+    Agent.start_link(fn -> %WebCrawler.Storage{} end, name: __MODULE__)
   end
 
   @doc """
@@ -25,9 +25,11 @@ defmodule WebCrawler.Storage do
       not_yet_visited = Map.get(page_data, :a)
         |> Enum.filter(fn elem -> !Enum.member?(MapSet.put(data.visited, page_url), elem) end)
 
+      uniq_to_visit = Enum.uniq(not_yet_visited ++ data.to_visit)
+
       #Update data
       %{data | pages: [{page_url, page_data}] ++ data.pages,
-               to_visit: not_yet_visited ++ data.to_visit,
+               to_visit: uniq_to_visit,
                visited: MapSet.put(data.visited, page_url)
              }
     end
@@ -47,10 +49,16 @@ defmodule WebCrawler.Storage do
   def get_next_page_to_crawl(agent) do
     fun = fn data ->
       case data.to_visit do
-          [head | rest] -> {{:ok, head}, %{data | to_visit: rest}}
+          [head | rest] ->
+            #IO.inspect("Returning #{head}, with #{rest} still to crawl")
+            {{:ok, head}, %{data | to_visit: rest}}
           [] -> {{:error, "Empty"}, %{data | to_visit: []}}
       end
     end
     Agent.get_and_update(agent, fun, @agent_update_timeout)
+  end
+
+  def get_all_pages_to_visit(agent) do
+    Agent.get(agent, fn data -> data.to_visit end, @agent_update_timeout)
   end
 end

@@ -1,11 +1,11 @@
-defmodule Webcrawler.Mixfile do
+defmodule WebCrawler.Mixfile do
   use Mix.Project
 
   def project do
     [
       app: :web_crawler,
       version: "0.1.0",
-      elixir: "~> 1.5",
+      elixir: "~> 1.6",
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
       deps: deps()
@@ -22,9 +22,11 @@ defmodule Webcrawler.Mixfile do
 
   defp deps do
     [
+      #{:waterpark, git: "https://github.com/willferguson/waterpark.git", tag: "v0.1"},
+      {:waterpark, path: "/Users/will/dev/elixir/waterpark"},
 	    {:floki, "~> 0.19.0"},
       {:httpoison, "~> 0.13"},
-      {:poolboy, "~> 1.5.1"}
+      {:credo, "~> 0.3", only: [:dev, :test]}
     ]
   end
 

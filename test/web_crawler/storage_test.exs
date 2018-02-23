@@ -1,9 +1,9 @@
-defmodule StorageTest do
+defmodule WebCrawler.StorageTest do
   use ExUnit.Case, async: true
   doctest WebCrawler.Storage
 
   setup do
-    {:ok, storage} = start_supervised({WebCrawler.Storage, %WebCrawler.Storage{}})
+    {:ok, storage} = start_supervised(WebCrawler.Storage)
     %{storage: storage}
   end
 
@@ -32,11 +32,12 @@ defmodule StorageTest do
   end
 
   test "test we can't crawl the same page twice", %{storage: storage} do
-    WebCrawler.Storage.submit_page(storage, {"test.com", %{:a => ["bbc.com", "abc.com"], :link => []}})
-    next_to_crawl = WebCrawler.Storage.get_next_page_to_crawl(storage)
-    WebCrawler.Storage.submit_page(storage, {next_to_crawl, %{:a => ["test.com"], :link => []}})
-    assert WebCrawler.Storage.get_next_page_to_crawl(storage) == {:ok, "abc.com"}
+    WebCrawler.Storage.submit_page(storage, {"test.com", %{:a => ["bbc.com", "abc.com", "test.com"], :link => []}})
+    WebCrawler.Storage.submit_page(storage, {"test1.com", %{:a => ["test.com", "test1.com", "abc.com", "def.com"], :link => []}})
+    pages = WebCrawler.Storage.get_all_pages_to_visit(storage)
+    assert length(pages) == length(Enum.uniq(pages))
   end
+
 
 
 end

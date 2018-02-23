@@ -1,5 +1,5 @@
-defmodule WebCrawler.HttpClient do
-  #TODO Use Behaviour
+defmodule WebCrawler.Web.HttpClient do
+  @behaviour WebCrawler.Web.HttpClientBehaviour
   def fetch(url) do
 
     case HTTPoison.get(url, [], [follow_redirect: true]) do
